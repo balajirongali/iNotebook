@@ -116,4 +116,69 @@ try {
 }
 })
 
+
+const sendEmail = require("../utils/sendEmail");
+const Otp = require("../models/Otp");
+
+// Send OTP
+router.post("/send-otp", async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  await Otp.create({ email, otp });
+  await sendEmail(email, "Your OTP Code", `Your OTP is: ${otp}`);
+
+  res.json({ success: true, msg: "OTP sent" });
+});
+
+// Verify OTP
+router.post("/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+  const record = await Otp.findOne({ email, otp });
+
+  if (!record) return res.status(400).json({ success: false, msg: "Invalid OTP" });
+
+  res.json({ success: true, msg: "OTP verified" });
+});
+
+
+// Forgot Password: Send OTP to Email
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  // Check if user exists
+  const user = await User.findOne({ email });
+  if (!user) return res.status(400).json({ error: "User not found" });
+
+  // Generate OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save OTP to DB
+  await Otp.create({ email, otp });
+
+  // Send OTP via Email
+  await sendEmail(email, "Reset Password OTP", `Your OTP is: ${otp}`);
+
+  res.json({ success: true, msg: "OTP sent to your email" });
+});
+
+// Reset Password: Verify OTP and Update Password
+router.post("/reset-password", async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  // Check OTP
+  const record = await Otp.findOne({ email, otp });
+  if (!record) return res.status(400).json({ error: "Invalid or expired OTP" });
+
+  // Hash new password
+  const salt = await bcrypt.genSalt(10);
+  const secPass = await bcrypt.hash(newPassword, salt);
+
+  // Update user's password
+  await User.findOneAndUpdate({ email }, { password: secPass });
+
+  res.json({ success: true, msg: "Password reset successful" });
+});
+
+
 module.exports=router
