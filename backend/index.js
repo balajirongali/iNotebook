@@ -9,7 +9,7 @@ connectToMongo();
 const app = express()
 const port = 5000
 
-console.log("Loaded Email:", process.env.EMAIL_USER)
+// console.log("Loaded Email:", process.env.EMAIL_USER)
 
 app.use(cors())
 app.use(express.json())//to use req.body in json
