@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {useNavigate} from 'react-router-dom'
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const Login = (props) => {
     const [credentials,setCredentials]=useState({email:"",password:""});
