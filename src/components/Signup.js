@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const Signup = (props) => {
   const [step, setStep] = useState(1);
@@ -8,10 +9,10 @@ const Signup = (props) => {
   const navigate = useNavigate();
 
   const sendOtp = async () => {
-    console.log("Send OTP clicked");
+    // console.log("Send OTP clicked");
     const { email } = credentials;
     try {
-      const response = await fetch("http://localhost:5000/api/auth/send-otp", {
+      const response = await fetch(`${backendURL}/api/auth/send-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -33,7 +34,7 @@ const Signup = (props) => {
   const verifyOtp = async () => {
     const { email } = credentials;
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const response = await fetch(`${backendURL}/api/auth/verify-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -60,7 +61,7 @@ const Signup = (props) => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:5000/api/auth/createuser", {
+      const response = await fetch(`${backendURL}/api/auth/createuser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
